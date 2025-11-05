@@ -1,0 +1,35 @@
+{{/*
+	Handles mass-forwarding of links and media to relevant channels.
+	Be warned that particularly large mass-forward databases may run into issues with YAGPDB's built-in command limits.
+	See https://github.com/Ishkander56/YAGPDB-custom-commands/tree/main/utility/mass-forwarding/ for further details and complementary commands.
+
+	Trigger: Regex | .*
+	Channels: Anywhere that forward-worthy media is posted.
+	Roles: Anyone you trust to forward messages.
+	Author: Ishkander <https://github.com/ishkander56>
+*/}}
+
+{{if or .IsCommand .User.Bot}}
+	{{return}}
+{{end}}
+
+{{if not (or (reFind `https?://` .Message.Content) (gt (len .Message.Attachments) 0))}}
+	{{return}}
+{{end}}
+
+{{$data := dbGet 0 "forwardable-map"}}
+{{$string := printf " %s " (lower .Message.Content)}}
+{{$channelID := .Channel.ID}}
+{{$messageID := .Message.ID}}
+
+{{if $data}}
+	{{$map := $data.Value}}
+	{{range $k, $v := $map}}
+		{{/* Word boundaries don't work correctly with terms like Alué. We also pad the message's text with spaces to guarantee that there are non-word characters on both sides.*/}}
+		{{if reFind (printf "(?i)\\W%s\\W" $k) $string}}
+			{{range $term, $ch := $v}}
+				{{sendMessage $ch (complexMessage "forward" (sdict "channel" $channelID "message" $messageID ) ) }}
+			{{end}}
+		{{end}}
+	{{end}}
+{{end}}

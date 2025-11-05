@@ -1,0 +1,55 @@
+{{/*
+	Registers a channel or thread as a target for mass-forwarding.
+	Be warned that particularly large mass-forward databases may run into issues with YAGPDB's built-in command limits.
+	See https://github.com/Ishkander56/YAGPDB-custom-commands/tree/main/utility/mass-forwarding/ for further details and complementary commands.
+
+	Trigger: Regex | "-(forward|unforward)(here)?"
+	Channels: Anywhere trusted users post.
+	Roles: Any user you trust to automatically forward posts.
+	Author: Ishkander <https://github.com/ishkander56>
+*/}}
+
+{{$args := parseArgs 1 "Usage: -forward <keyword>, -unforward <keyword>" (carg "string" "keyword")}}
+{{$keyword := lower ($args.Get 0)}}
+{{$channelID := (str .Channel.ID)}}
+
+{{$data := dbGet 0 "forwardable-map"}}
+{{$map := sdict}}
+{{if $data}}
+	{{$map = $data.Value}}
+{{end}}
+
+{{$forwardMode := not (hasPrefix (lower .Message.Content) "-unf")}}
+
+{{if $forwardMode}}
+	{{if $map.HasKey $keyword}}
+		{{if inFold ($map.Get $keyword) $channelID}}
+			{{.User.Mention}}: **"{{$keyword}}"** media is already forwardable to this channel. No changes have been made.
+			{{return}}
+		{{end}}
+		{{$oldMap := $map.Get $keyword}}
+		{{$map.Set $keyword ($oldMap.Append $channelID)}}
+	{{else}}
+		{{$map.Set $keyword (cslice $channelID)}}
+	{{end}}
+
+	{{.User.Mention}}: **"{{$keyword}}"** media is now forwardable to this channel.
+{{else}}
+	{{if or (not ($map.HasKey $keyword)) (not $data)}}
+		{{.User.Mention}}: **"{{$keyword}}"** media is not forwardable to any channel. No changes have been made.
+		{{return}}
+	{{end}}
+
+	{{$newChannels := cslice}}
+	{{range $ch := $map.Get $keyword}}
+		{{if ne $ch $channelID}}
+			{{$newChannels = $newChannels.Append $ch}}
+		{{end}}
+	{{end}}
+	{{if not $newChannels}}
+		{{$map.Del $keyword}}
+	{{end}}
+
+	{{.User.Mention}}: **"{{$keyword}}"** media is no longer forwardable to this channel.
+{{end}}
+{{dbSet 0 "forwardable-map" $map}}

@@ -17,7 +17,7 @@
 	)
 	(cembed
 		"title" "Rule 1"
-		"description" (joinStr "\n" "**Act in good faith.**" "People across the internet come from a large range of backgrounds. They may not have the knowledge and experience that you do." "People deserve to be treated with a baseline level of decency. Do not mistreat others, especially not on the basis of identity or ability." "" "Ideologies that value or devalue people based on their race, religion, gender, sexuality, or disability are expressly forbidden.")
+		"description" (joinStr "\n" "**Act in good faith.**" "People across the internet come from a large range of backgrounds. They may not have the knowledge and experience that you do." "People deserve to be treated with a baseline level of decency. Do not mistreat others, especially not on the basis of identity or ability." "" "Ideologies that value or devalue people based on their race, religion, gender, orientation, or disability are expressly forbidden.")
 	)
 	(cembed
 		"title" "Rule 2"

@@ -13,7 +13,7 @@
 {{$rules := cslice
 	(cembed
 		"title" "Rule 0"
-		"description" (joinStr "\n" "**The Golden Rule**" "By participating in this server, you agree to a broad social contract that can't be fully explained in a handful of rules posts." "" "Be nice." "Ask questions if you're unsure about certain behavior." "Avoid doing things that force us to add new rules." "Malicious rules-lawyering will not be tolerated.")
+		"description" (joinStr "\n" "**The Golden Rule**" "By participating in this server, you agree to a broad social contract that can't be fully explained in a handful of rules posts." "" "Be nice." "Ask questions if you're unsure about certain behavior." "Avoid doing things that force us to add new rules." "Malicious rules-lawyering will not be tolerated." "\"Debate\" is not a good excuse for bad behavior.")
 	)
 	(cembed
 		"title" "Rule 1"
